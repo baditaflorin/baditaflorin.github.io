@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Interactiv: Florin Badita</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Stone, Slate, Sky) -->
+    <!-- Application Structure Plan: A single-page dashboard design with thematic sections. Starts with a high-level summary, moves to an interactive timeline for his career journey, details the 'Corruption Kills' movement with data viz, explains his core strategy with a diagram, and features a filterable, interactive network map as the centerpiece for exploring his connections. This structure breaks down the dense report into digestible, engaging modules, prioritizing user exploration over the original linear format. -->
+    <!-- Visualization & Content Choices: Report Info -> Career Path -> Goal: Show Change -> Viz: Interactive Timeline -> Interaction: Click to expand -> Justification: Better than text block. | Report Info -> Network Tables -> Goal: Show Relationships -> Viz: Interactive Bubble Chart -> Interaction: Filter by category, hover for details -> Justification: Dynamic exploration is far superior to static tables. | Report Info -> Protest Stats -> Goal: Inform -> Viz: Animated Counters/Line Chart -> Justification: Makes numbers more impactful. All charts via Chart.js (Canvas). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #1e293b; /* slate-800 */
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 50vh;
+            width: 100%;
+            max-width: 900px;
+            max-height: 500px;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            text-align: center;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #e2e8f0; /* slate-200 */
+            color: #475569; /* slate-600 */
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        .nav-button {
+            transition: all 0.2s ease-in-out;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active, .nav-button:hover {
+            color: #0284c7; /* sky-600 */
+            border-bottom-color: #0284c7; /* sky-600 */
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+            padding-left: 2.5rem;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 0.25rem;
+            height: 1rem;
+            width: 1rem;
+            background-color: #cbd5e1; /* slate-300 */
+            border-radius: 9999px;
+            border: 2px solid white;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 0.45rem;
+            top: 0.25rem;
+            bottom: -0.5rem;
+            width: 2px;
+            background-color: #e2e8f0; /* slate-200 */
+        }
+        .timeline-item.active .timeline-dot {
+            background-color: #0284c7; /* sky-600 */
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 lg:px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-slate-800">Profil Interactiv: <span class="text-sky-600">Florin Badita</span></h1>
+            <div class="hidden md:flex space-x-6 text-slate-600 font-medium">
+                <a href="#identitate" class="nav-button">Identitate</a>
+                <a href="#parcurs" class="nav-button">Parcurs</a>
+                <a href="#strategie" class="nav-button">Strategie</a>
+                <a href="#retea" class="nav-button">Rețea</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8 space-y-16">
+
+        <!-- Section 1: Identitate & Profil General -->
+        <section id="identitate" class="text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-2">Florin Badita-Nistor</h2>
+            <p class="text-lg text-slate-600 mb-6 max-w-3xl mx-auto">O analiză a profilului public al unui actor politic modern, la intersecția dintre activism civic, tehnologie și antreprenoriat social.</p>
+            <div class="flex flex-wrap justify-center gap-3 md:gap-4">
+                <span class="tag">Activist</span>
+                <span class="tag">Data Scientist</span>
+                <span class="tag">Antreprenor Social</span>
+                <span class="tag">Artist</span>
+                <span class="tag bg-amber-100 text-amber-800">Forbes 30 Under 30</span>
+                <span class="tag bg-red-100 text-red-800">TEDx Speaker</span>
+            </div>
+        </section>
+
+        <!-- Section 2: Parcursul Activistului -->
+        <section id="parcurs">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">Parcursul Activistului: O Cronologie Interactivă</h2>
+                <p class="text-slate-600 max-w-3xl mx-auto">De la o tragedie națională la recunoaștere internațională, explorați momentele cheie care au definit traiectoria lui Florin Badita. Selectați un eveniment pentru a afla mai multe.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div id="timeline-nav" class="md:col-span-1 space-y-1 relative">
+                    <!-- Timeline items will be generated here -->
+                </div>
+                <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-sm min-h-[300px]">
+                    <div id="timeline-content" class="fade-in">
+                        <!-- Content for selected timeline item appears here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 3: Mișcarea "Corupția Ucide" -->
+        <section id="miscare">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">Impactul Mișcării "Corupția Ucide"</h2>
+                <p class="text-slate-600 max-w-3xl mx-auto">Născută din tragedia de la Colectiv, platforma "Corupția Ucide" a devenit un catalizator pentru cele mai mari proteste din istoria modernă a României.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                 <div class="stat-card">
+                    <p class="text-5xl font-bold text-sky-600" id="protest-count">0</p>
+                    <p class="text-slate-500 mt-2">Participanți la protestele din 2017</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-5xl font-bold text-sky-600" id="follower-count">0</p>
+                    <p class="text-slate-500 mt-2">Urmăritori ai paginii de Facebook</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-5xl font-bold text-sky-600" id="foia-count">0</p>
+                    <p class="text-slate-500 mt-2">Cereri de informații publice trimise</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Section 4: Strategia Duală -->
+        <section id="strategie">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">O Strategie pe Două Fronturi</h2>
+                <p class="text-slate-600 max-w-3xl mx-auto">Succesul campaniilor a fost construit pe o strategie duală: mobilizare publică în masă, combinată cu analiză de date pentru a susține jurnalismul de investigație.</p>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-sm grid md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                <div class="text-center px-4 pt-4 md:pt-0">
+                    <div class="text-6xl mb-4">📢</div>
+                    <h3 class="text-2xl font-semibold mb-2 text-sky-700">Războiul Aerian: Presiune Publică</h3>
+                    <p class="text-slate-600">Utilizarea rețelelor sociale pentru a organiza proteste de masă, creând o presiune politică imensă și aducând corupția în centrul atenției publice. Această tactică a generat voința politică necesară pentru schimbare.</p>
+                </div>
+                <div class="text-center px-4 pt-8 md:pt-0">
+                    <div class="text-6xl mb-4">🔎</div>
+                    <h3 class="text-2xl font-semibold mb-2 text-slate-700">Războiul Terestru: Date și Investigații</h3>
+                    <p class="text-slate-600">Colectarea și analiza de date din surse deschise pentru a identifica modele de corupție. Dovezile erau apoi furnizate jurnaliștilor de investigație, alimentând expuneri media care au dus la anchete oficiale.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 5: Rețeaua de Colaboratori -->
+        <section id="retea">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2">Harta Rețelei de Colaboratori</h2>
+                <p class="text-slate-600 max-w-3xl mx-auto">Traiectoria sa a fost susținută de o rețea densă de aliați. Explorați legăturile sale cu societatea civilă din România, personalități internaționale și instituții pro-democrație. Treceți cursorul peste un nod pentru detalii.</p>
+            </div>
+            <div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+                <div class="flex flex-wrap justify-center gap-2 mb-6">
+                    <button class="network-filter-btn active" data-filter="all">Toate</button>
+                    <button class="network-filter-btn" data-filter="romania">Societate Civilă (RO)</button>
+                    <button class="network-filter-btn" data-filter="international">Rețea Internațională</button>
+                    <button class="network-filter-btn" data-filter="institutional">Suport Instituțional</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="networkChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400 text-center py-6 mt-16">
+        <p>Aplicație web interactivă generată pentru a vizualiza raportul de cercetare despre Florin Badita.</p>
+        <p class="text-sm mt-1">Structură și design create pentru a facilita explorarea și înțelegerea datelor.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Data
+            const timelineData = [
+                {
+                    year: '2015',
+                    title: 'Geneza: Incendiul din Colectiv',
+                    content: `Pe 30 octombrie, incendiul din clubul Colectiv provoacă o tragedie națională. Ca răspuns la fragmentarea discursului public, Florin Badita creează pagina de Facebook "Corupția Ucide", oferind un nume și un stindard pentru furia publică acumulată împotriva corupției sistemice.`
+                },
+                {
+                    year: '2017',
+                    title: 'Vârful Protestelor Anti-Corupție',
+                    content: `Platforma "Corupția Ucide" devine un instrument central în mobilizarea pentru protestele masive din 2017, cele mai mari din istoria post-comunistă a României. Între 500.000 și 600.000 de oameni ies în stradă, forțând guvernul să retragă Ordonanța 13, care ar fi dezincriminat anumite fapte de corupție.`
+                },
+                {
+                    year: '2018',
+                    title: 'Recunoaștere Europeană',
+                    content: `Anul 2018 aduce recunoaștere internațională majoră. Badita este inclus în lista Forbes "30 Under 30 Europe" la categoria Lege & Politică și câștigă titlul de "Personalitatea Europeană a Anului" oferit de Euronews, în urma unui vot public.`
+                },
+                 {
+                    year: '2018',
+                    title: 'Platforma TEDx',
+                    content: `Este invitat să vorbească la TEDxBratislava. Discursul său, "Civic change is a marathon, not a sprint: showcase of Romania", prezintă experiența românească unui public global, consolidându-i statutul de voce importantă în spațiul civic european.`
+                },
+                {
+                    year: '2021',
+                    title: 'Integrare Instituțională',
+                    content: `Este selectat ca Senior Fellow în programul Landecker Democracy, o colaborare între Fundația Alfred Landecker și Humanity in Action. Această bursă marchează integrarea sa într-o rețea globală de lideri pro-democrație, primind resurse și training pentru a-și dezvolta proiectele.`
+                },
+                {
+                    year: '2023',
+                    title: 'Pivotul către AI și Educație',
+                    content: `Își extinde focusul profesional către inteligența artificială, publicând cartea "1337 Use Cases for ChatGPT" și oferind workshop-uri plătite despre productivitate cu ajutorul AI. Această mișcare reprezintă o tranziție de la activismul pur la un model care include și comercializarea expertizei tehnice.`
+                }
+            ];
+
+            const networkData = {
+                romania: [
+                    { name: 'Cătălin Teniță', role: 'Fondator, Geeks for Democracy', value: 20 },
+                    { name: 'Cristian Neagoe', role: 'Co-fondator, Street Delivery', value: 18 },
+                    { name: 'Tudor Brădățan', role: 'Director Executiv, Declic', value: 19 },
+                    { name: 'Ioana Ciută', role: 'Președinte, Bankwatch România', value: 16 },
+                    { name: 'Georgiana Iorgulescu', role: 'Director Executiv, CRJ', value: 17 },
+                    { name: 'Corina Șuteu', role: 'Fost Ministru al Culturii', value: 15 },
+                    { name: 'Liana Ganea', role: 'Președinte, ActiveWatch', value: 14 }
+                ],
+                international: [
+                    { name: 'Emma Watson', role: 'Actriță, Activistă (Competitor)', value: 15 },
+                    { name: 'Xavier Niel', role: 'Antreprenor (Competitor)', value: 14 },
+                    { name: 'András Fekete-Gyor', role: 'Activist, Momentum (Ungaria)', value: 16 },
+                    { name: 'Manel Ben Achour', role: 'CPO, I WATCH Tunisia', value: 17 },
+                    { name: 'Coralie Pring', role: 'Expert, Transparency International', value: 18 }
+                ],
+                institutional: [
+                    { name: 'Forbes 30 Under 30', role: 'Premiu', value: 25 },
+                    { name: 'Euronews', role: 'Premiu', value: 24 },
+                    { name: 'Landecker Foundation', role: 'Bursă (Fellowship)', value: 22 },
+                    { name: 'Humanity in Action', role: 'Bursă (Fellowship)', value: 21 },
+                    { name: 'TED', role: 'Platformă de discurs', value: 20 },
+                    { name: 'Citizen OS', role: 'Program de accelerare', value: 18 },
+                    { name: 'European Parliament', role: 'Platformă de discurs', value: 19 }
+                ]
+            };
+            
+            // Animated Counters
+            function animateValue(obj, start, end, duration) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString('ro-RO');
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            const protestCountEl = document.getElementById('protest-count');
+            const followerCountEl = document.getElementById('follower-count');
+            const foiaCountEl = document.getElementById('foia-count');
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateValue(protestCountEl, 0, 600000, 2000);
+                        animateValue(followerCountEl, 0, 137000, 2000);
+                        animateValue(foiaCountEl, 0, 7000, 2000);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            observer.observe(document.getElementById('miscare'));
+
+
+            // Timeline
+            const timelineNav = document.getElementById('timeline-nav');
+            const timelineContent = document.getElementById('timeline-content');
+
+            timelineData.forEach((item, index) => {
+                const navItem = document.createElement('div');
+                navItem.className = 'timeline-item cursor-pointer';
+                navItem.innerHTML = `
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <p class="font-bold text-slate-800">${item.year}</p>
+                    <p class="text-slate-600">${item.title}</p>
+                `;
+                navItem.addEventListener('click', () => {
+                    updateTimelineContent(index);
+                });
+                timelineNav.appendChild(navItem);
+            });
+
+            function updateTimelineContent(index) {
+                const item = timelineData[index];
+                timelineContent.innerHTML = `
+                    <div class="fade-in">
+                        <p class="text-sm font-semibold text-sky-600 mb-2">${item.year}</p>
+                        <h3 class="text-2xl font-bold mb-4">${item.title}</h3>
+                        <p class="text-slate-700 leading-relaxed">${item.content}</p>
+                    </div>
+                `;
+                
+                document.querySelectorAll('.timeline-item').forEach((el, i) => {
+                    if (i === index) {
+                        el.classList.add('active');
+                    } else {
+                        el.classList.remove('active');
+                    }
+                });
+            }
+
+            updateTimelineContent(0); // Set initial content
+
+            // Network Chart
+            const ctx = document.getElementById('networkChart').getContext('2d');
+            let networkChart;
+
+            const datasets = {
+                all: [
+                    ...networkData.romania.map(d => ({...d, type: 'romania'})),
+                    ...networkData.international.map(d => ({...d, type: 'international'})),
+                    ...networkData.institutional.map(d => ({...d, type: 'institutional'}))
+                ],
+                romania: networkData.romania.map(d => ({...d, type: 'romania'})),
+                international: networkData.international.map(d => ({...d, type: 'international'})),
+                institutional: networkData.institutional.map(d => ({...d, type: 'institutional'}))
+            };
+
+            const colors = {
+                romania: 'rgba(56, 189, 248, 0.7)', // sky-400
+                international: 'rgba(251, 146, 60, 0.7)', // orange-400
+                institutional: 'rgba(139, 92, 246, 0.7)', // violet-500
+            };
+            
+            const borderColors = {
+                romania: 'rgba(14, 165, 233, 1)', // sky-500
+                international: 'rgba(249, 115, 22, 1)', // orange-500
+                institutional: 'rgba(124, 58, 237, 1)', // violet-600
+            };
+
+            function createChart(filter = 'all') {
+                const data = datasets[filter];
+                const chartData = {
+                    datasets: data.map(point => ({
+                        label: point.name,
+                        data: [{
+                            x: Math.random() * 100,
+                            y: Math.random() * 100,
+                            r: point.value
+                        }],
+                        backgroundColor: colors[point.type],
+                        borderColor: borderColors[point.type],
+                        borderWidth: 2,
+                        hoverBackgroundColor: borderColors[point.type],
+                        pointRole: point.role
+                    }))
+                };
+                
+                if (networkChart) {
+                    networkChart.destroy();
+                }
+
+                networkChart = new Chart(ctx, {
+                    type: 'bubble',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: '#1e293b', // slate-800
+                                titleFont: { size: 14, weight: 'bold' },
+                                bodyFont: { size: 12 },
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        const role = context.dataset.pointRole;
+                                        if (role) {
+                                          return [label, role];
+                                        }
+                                        return label;
+                                    },
+                                     title: function() {
+                                        return '';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: false,
+                                min: -10,
+                                max: 110
+                            },
+                            y: {
+                                display: false,
+                                min: -10,
+                                max: 110
+                            }
+                        }
+                    }
+                });
+            }
+
+            document.querySelectorAll('.network-filter-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelector('.network-filter-btn.active').classList.remove('active');
+                    button.classList.add('active');
+                    createChart(button.dataset.filter);
+                });
+            });
+
+            createChart(); // Initial chart
+            
+            // Smooth scrolling for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+        });
+    </script>
+
+</body>
+</html>
